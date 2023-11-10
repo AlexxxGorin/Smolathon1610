@@ -1,9 +1,3 @@
-import numpy as np
-from transformers import AutoTokenizer, AutoModel
-import torch
-import spacy
-import re
-
 def get_topk_rec(man_hist : list, idx2place_v : dict, k=None,
                  man_vector : list = None, alpha : float = 1):
   '''
@@ -26,7 +20,7 @@ def get_topk_rec(man_hist : list, idx2place_v : dict, k=None,
     cosine_arr = cos((1 - alpha) * man_vector + alpha * man_hist_vector, unnul_place_vectors[1:])
   else:
     unnul_place_vectors = torch.tensor(list(map(idx2place_v.get, places_ids)))
-    places_ids = list(filter(lambda x: idx2place_v[x] != [],  list(idx2place_v.keys())))
+    places_ids = list(filter(lambda x: idx2place_v[x] != [] and x not in man_hist,  list(idx2place_v.keys())))
     temp_ids = [i for i in range(len(places_ids))]
     cosine_arr = cos(man_hist_vector, unnul_place_vectors)
   if k != None:
