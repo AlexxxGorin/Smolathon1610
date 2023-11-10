@@ -1,0 +1,141 @@
+:root {
+  --bg-color:#1E1E1E;
+  --main-color: #2D2D2D
+}
+
+.App {
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+.covers {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 0px;
+}
+
+.covers img {
+  width: 140px;
+  height: 140px;
+  object-position: center;
+  object-fit: cover;
+  border-radius: 30px;
+  padding: 15px;
+}
+
+.covers-add {
+  margin-top: 15px;
+  width: 110px;
+  height: 110px;
+  border-radius: 30px;
+  padding: 15px;
+  background-color: var(--main-color);
+  margin-left: 15px;
+}
+
+.covers-add h2 {
+  color:#FFF;
+  font-size: 80px;
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-weight: 300;
+}
+
+.fields-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10vw;
+}
+
+.fields-container h1 {
+  color: #FFF;
+  font-size: 50px;
+  font-weight: 500;
+  margin-left: -6%;
+}
+
+input {
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+input:focus {
+  outline: 0;
+}
+
+textarea {
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+textarea:focus {
+  outline: 0;
+}
+
+.name-field, .descr-field {
+  background-color: var(--main-color);
+  border: 0;
+  border-radius: 25px;
+  font-size: 30px;
+  padding: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: 550px;
+  height: 36px;
+  color: #FFF;
+}
+
+.descr-field {
+  margin-top: 40px;
+  height: 108px;
+  max-lines: 3;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.tag-app-container, .cusine-app-container {
+  display: flex;
+  flex-direction: row;
+  width: 650px;
+  gap: 15px;
+  flex-wrap: wrap;
+  /* margin-left: 3%; */
+}
+
+.cusine-app-container {
+  width: 510px;
+}
+
+.tag-app, .tag-app-active {
+  background-color: var(--main-color);
+  position: relative;
+  /* left: 3%; */
+  align-self: flex-start;
+  border-radius: 22px;
+  padding: 13px;
+  padding-right: 20px;
+  z-index: 2;
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.tag-app-active {
+  background-color: #FFF;
+}
+
+.tag-app h3, .tag-app-active h3 {
+  color: #FFF;
+  width: fit-content;
+  height: fit-content;
+  font-size: 18px;
+  margin: 0px;
+  font-weight: 500;
+}
+
+.tag-app-active h3 {
+  color: #000;
+}
