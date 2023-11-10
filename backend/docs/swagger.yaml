@@ -1,0 +1,250 @@
+definitions:
+  errcode.ErrorResponse:
+    properties:
+      error:
+        example: error
+        type: string
+    type: object
+  model.PlaceDelivery:
+    properties:
+      address:
+        type: string
+      average_bill:
+        type: string
+      description:
+        type: string
+      description_vector:
+        items:
+          type: number
+        type: array
+      features:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      features_vector:
+        items:
+          type: number
+        type: array
+      id:
+        type: integer
+      link:
+        type: string
+      menu:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+      name:
+        type: string
+      phone_number:
+        type: string
+      photos:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      tags:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      tags_vector:
+        items:
+          type: number
+        type: array
+      work_hours:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+    required:
+    - name
+    type: object
+  model.Tag:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      weight:
+        items:
+          type: number
+        type: array
+    type: object
+info:
+  contact: {}
+  description: This is a Salut! API
+  title: Salut API
+  version: "1.0"
+paths:
+  /place/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new place with the input payload
+      operationId: create-place
+      parameters:
+      - description: Place Payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlaceDelivery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created place with ID
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new place
+      tags:
+      - places
+  /place/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete place with the input payload
+      operationId: delete-place
+      parameters:
+      - description: place get by id
+        in: query
+        name: id
+        type: integer
+      - description: place get by name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete place
+      tags:
+      - places
+  /place/get:
+    get:
+      description: Get place with the input payload
+      operationId: get-place
+      parameters:
+      - description: place get by id
+        in: query
+        name: id
+        type: integer
+      - description: place get by name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully finded place
+          schema:
+            $ref: '#/definitions/model.PlaceDelivery'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get place by id or name
+      tags:
+      - places
+  /place/get_all:
+    get:
+      description: Get all places
+      operationId: get-all-places
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully finded places
+          schema:
+            items:
+              $ref: '#/definitions/model.PlaceDelivery'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all places
+      tags:
+      - places
+  /place/update:
+    put:
+      consumes:
+      - application/json
+      description: Update place with the input payload
+      operationId: update-place
+      parameters:
+      - description: Place Payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlaceDelivery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update place
+      tags:
+      - places
+swagger: "2.0"

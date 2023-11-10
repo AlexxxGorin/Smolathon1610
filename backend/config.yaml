@@ -1,0 +1,7 @@
+host: "salut-postgres"
+#host: "127.0.0.1"
+port: 5432
+user: "postgres"
+password: "salut"
+db_name: "postgres"
+timeout: 2
