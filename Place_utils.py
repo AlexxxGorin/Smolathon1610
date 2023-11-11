@@ -5,6 +5,27 @@ import torch
 import spacy
 import re
 
+def compute_prompt_embeddings(text, mode='prompt', is_return=True):
+    if mode == 'prompt':
+      pattern = r'\b(?:кальян|рест|кафе|театр|кино|галлерея|памятн|мест|Мест|Кальян|Рест|Кафе|театр|Кино|Галлере|Памятн|)\w*\b'
+      text = re.sub(pattern, '', text)
+    tensor_text = text_tokenizer(text, padding=True, truncation=True, max_length=24, return_tensors='pt')
+    with torch.no_grad():
+      model_out = vec_model(**tensor_text)
+    embs = _mean_pooling(model_out, tensor_text['attention_mask']).squeeze()
+    if mode == 'tags':
+      embs = embs.mean(0)
+    if is_return:
+      return embs
+
+
+def _mean_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
+    sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+    return sum_embeddings / sum_mask
+
 def do_nice(text):
   lemm_ru = spacy.load('ru_core_news_sm')
   lemmas = lemm_ru(text)
@@ -30,7 +51,7 @@ def do_nice(text):
 
 lemm_ru = spacy.load('ru_core_news_sm')
 
-def create_place_emb(desc)
+def create_place_emb(desc):
   emb_dict = {}
   for id in tqdm.tqdm_notebook(desc.keys()):
     text = desc[id]
@@ -40,8 +61,8 @@ def create_place_emb(desc)
       except:
         print(text, id)
         break
-      embedding = compute_embeddings(text, is_return=True)
+      embedding = compute_prompt_embeddings(text, is_return=True)
       emb_dict[id] = [place_type] + embedding.cpu().tolist()
-    else:
+    else: 
       emb_dict[id] = []
   return emb_dict
