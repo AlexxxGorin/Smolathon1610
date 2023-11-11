@@ -1,0 +1,33 @@
+// Define a list of font weights and styles
+$font-weights: (
+    "Thin": 100,
+    "Light": 300,
+    "Regular": 400,
+    "Medium": 500,
+    "Semibold": 600,
+    "Bold": 700,
+    "Heavy": 800,
+    "Black": 900
+);
+
+// Define a mixin to create @font-face rules
+@mixin font-face($font-family, $font-path, $weights) {
+    @each $name, $weight in $weights {
+        @font-face {
+        font-family: '#{$font-family}';
+        src: url('#{$font-path}-#{$name}.otf') format('opentype');
+        font-weight: $weight;
+        font-style: normal;
+        }
+
+        @font-face {
+            font-family: '#{$font-family}';
+            src: url('#{$font-path}-#{$name}Italic.otf') format('opentype');
+            font-weight: $weight;
+            font-style: italic;
+        }
+    }
+}
+
+// Include the mixin to generate the CSS
+@include font-face('SF Pro Display', './assets/fonts/SF-Pro-Display', $font-weights);

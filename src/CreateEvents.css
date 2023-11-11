@@ -1,0 +1,111 @@
+:root {
+  --bg-color:#1E1E1E;
+  --main-color: #2D2D2D
+}
+
+.CreateApp {
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+.create-covers {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 0px;
+}
+
+.create-covers img {
+  width: 140px;
+  height: 140px;
+  object-position: center;
+  object-fit: cover;
+  border-radius: 30px;
+  padding: 15px;
+}
+
+.create-covers-add {
+  margin-top: 15px;
+  width: 110px;
+  height: 110px;
+  border-radius: 30px;
+  padding: 15px;
+  background-color: var(--main-color);
+  margin-left: 15px;
+}
+
+.create-covers-add h2 {
+  color:#FFF;
+  font-size: 80px;
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-weight: 300;
+}
+
+.create-fields-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10vw;
+}
+
+.create-fields-container h1 {
+  color: #FFF;
+  font-size: 50px;
+  font-weight: 500;
+  margin-left: -6%;
+}
+
+input {
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+input:focus {
+  outline: 0;
+}
+
+textarea {
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+textarea:focus {
+  outline: 0;
+}
+
+.create-name-field, .create-descr-field, .create-price-field {
+  background-color: var(--main-color);
+  border: 0;
+  border-radius: 25px;
+  font-size: 30px;
+  padding: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: 550px;
+  height: 36px;
+  color: #FFF;
+}
+
+.create-descr-field {
+  margin-top: 40px;
+  height: 108px;
+  max-lines: 3;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.create-price-field {
+  margin-top: 40px;
+  height: 36px;
+  max-lines: 3;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.dt-p {
+  height: max-content;
+  border-radius: 30px;
+  background-color: white;
+}
