@@ -1,6 +1,6 @@
 import './App.css';
 import './checkboxes.css';
-//import Preview from './Preview';
+import Preview from './Preview';
 
 import React, { useState, useEffect} from 'react';
 import axios from 'axios';
@@ -10,9 +10,13 @@ import { Accordion, AccordionItem } from '@szhsin/react-accordion';
 
 import { DefaultExpansion, ToggleableExpansion, FeaturesExpansion } from './Expansions'
 
-import {tagsList, additional, emojis, placeTypes, cusineTypes} from './objects'
+import {tagsList, additional, emojis, placeTypes, cusineTypes } from './objects'
 
 import { HashRouter, Routes, Route, Switch, useParams } from 'react-router-dom';
+
+import Events from './Events';
+
+import CreateEvents from './CreateEvents';
 
 // import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -24,11 +28,13 @@ function App() {
     // <HashRouter basename="/app">
       <Routes>
         <Route path="/constructor/:id" exact element={<Constructor/>} />
+        <Route path="/constructor/:id/events" exact element={<Events/>} />
+        <Route path="/constructor/:id/events/create" exact element={<CreateEvents/>} />
       </Routes>
       // </HashRouter>
   );
 }
-
+ 
 
 const Constructor = () => {
 
@@ -69,10 +75,10 @@ const Constructor = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://92.53.105.117:8080/place/get?id=${id}`, {
+        const response = await axios.get(`http://195.80.50.92:8080/place/get?id=${id}`, {
           headers: {
             'Accept': 'application/json',
-            // 'Access-Control-Allow-Origin': '*'
+            
           }});
         setData(JSON.parse(response['request']['response']));
         setName(JSON.parse(response['request']['response'])["name"])
@@ -369,16 +375,16 @@ const Constructor = () => {
     }));
   }
 
-const renderTag = (key, list) => {
-  if (tags != undefined){
-    var em = list[key];
-    var text = key;
-    if (!tags.some(item => item["name"] === key))
-    return (
-      <div onClick={() => handleTag(key)} className='tag-app'><h3>{em} {text.charAt(0).toUpperCase() + text.slice(1)}</h3></div>
-    )
+  const renderTag = (key, list) => {
+    if (tags != undefined){
+      var em = list[key];
+      var text = key;
+      if (!tags.some(item => item["name"] === key))
+      return (
+        <div onClick={() => handleTag(key)} className='tag-app'><h3>{em} {text.charAt(0).toUpperCase() + text.slice(1)}</h3></div>
+      )
+    }
   }
-}
 
   const renderFeature = (key, majorKey) => {
     // console.log('ha', majorKey, key)
@@ -408,15 +414,39 @@ const renderTag = (key, list) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageSrc(e.target.result);
-        console.log(e.target.result)
+        //console.log(e.target.result)
       };
       reader.readAsDataURL(file);
     }
   };
 
+  let hpath = `/#/constructor/${id}/events`;
+
+  function handleSave() {
+    let send = {
+      "id": id.toString(),
+      "name": name,
+      "description": descr,
+      "photos": photos,
+      "menu": menu,
+      "phone_number": phone,
+      "work_hours": time,
+      "average_bill": "",
+      "link": "",
+      "address": adress,
+      "description_vector": [],
+      "features": features,
+      "features_vector": [],
+      "tags": tags,
+      "tags_vector": [],
+      "events": events
+    }
+    axios.put(`http://195.80.50.92:8080/place/put`, data)
+  }
+
   return (
     <div className="App">
-    {data != null ? <Preview place={data} name={name} adress={adress} bill={bill} tags={tags} features={features} cusinePlace={cusine} time={time} phone={phone} photos={photos} menu={menu} descr={descr} link={link}/> : <div/>}
+    {data != null ? <Preview place={data} name={name} adress={adress} bill={bill} tags={tags} features={features} cusinePlace={cusine} time={time} phone={phone} photos={photos} menu={menu} descr={descr} link={link} events={events}/> : <div/>}
       <div className='fields-container'>
 
         <h1>Тип заведения</h1>
@@ -545,8 +575,11 @@ const renderTag = (key, list) => {
               </div>
             </ToggleableExpansion>
           </Accordion> : <div/>}
+        <a href={`/#/constructor/${id}/events`}><h1>События</h1></a>
 
-        <h1>События</h1>
+
+          <div onClick={() => handleSave()} className='save'>Сохранить</div>
+
         {/* <input className='name-field' type="text" value="Введите название события" onChange={handleName} />
         <textarea cols={20} maxLength={300} className='descr-field' type="text" value="Введите описание события" onChange={handleDescr} /> */}
 

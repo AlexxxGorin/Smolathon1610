@@ -1,0 +1,114 @@
+.bar-conteiner {
+  margin-left: 2px;
+  display: flex;
+  /* gap: 3px; */
+  flex-direction: row; 
+  flex-wrap: wrap;
+  z-index: 10;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 3px;
+  background-color: #444;
+  margin-right: 0px;
+  z-index: 11;
+}
+
+.prb-ph {
+  height: 3px;
+  background-color: #FFF;
+  z-index: 999;
+  position: absolute;
+  /* margin-top: 3px; */
+}
+
+.prb-ph2 {
+  /* position: absolute; */
+  /* width: 20px; */
+  height: 3px;
+  background-color: #444;
+  margin-right: 0px;
+  bottom: 3px;
+  z-index: 990;
+}
+
+.stories-conteiner {
+  width: 450px;
+  height: 100vh;
+  background-color: #999;
+  flex: 1;
+  align-self: flex-start;
+}
+
+.stories-blured-photo {
+  position: absolute;
+  filter: blur(10px);
+  height: 100vh;
+  z-index: 1;
+  width: 95%;
+  top: 0px;
+}
+
+.stories-photo {
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
+  /* top: -100vh; */
+  object-fit: contain;
+  z-index: 2;
+}
+
+.stories-conteiner h1 {
+  position: absolute;
+  color: white;
+  margin-left: 40%;
+  /* margin-right: 45%; */
+  z-index: 0;
+  /* top: -353%; */
+  top: 40%;
+  font-size: 40px;
+  /* text-align: center; */
+  z-index: 10;
+}
+
+.st-c-1 {
+  position: absolute;
+
+  background-color: #F00;
+  height: 100%;
+  width: 25%;
+  left: 0%;
+  z-index: 10;
+  opacity: 0;
+  top: 0%;
+}
+
+.st-c-2 {
+  position: absolute;
+
+  background-color: #00F;
+  height: 100%;
+  width: 50%;
+  left: 25%;
+  z-index: 10;
+  opacity: 0;
+  top: 0%;
+}
+
+.st-c-3 {
+  position: absolute;
+
+  background-color: #0F0;
+  height: 100%;
+  width: 25%;
+  left: 75%;
+  top: 0%;
+  z-index: 10;
+  opacity: 0;
+}
+
+.close-img {
+  position: absolute;
+  z-index: 100;
+}
