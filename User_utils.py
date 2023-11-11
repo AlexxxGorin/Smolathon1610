@@ -25,12 +25,18 @@ def _mean_pooling(model_output, attention_mask):
     return sum_embeddings / sum_mask
 
 
-def encode_person_text(input_string, text_tokenizer, vec_model):
+def encode_person_text(input_string, text_tokenizer, vec_model, mode='prompt'):
     '''
-    input_string - вектроное представление 
+    input_string - текстовый промпт
     '''
     # pattern = r'\b(?:кальян|рест|кафе|театр|кино|галлерея|памятн)\w*\b'
     # input_string = re.sub(pattern, '', input_string)
+    if mode != 'prompt':
+      tensor_prompt = text_tokenizer(input_string, padding=True, truncation=True, max_length=24, return_tensors='pt')
+      with torch.no_grad():
+        emb_prompt = vec_model(**tensor_prompt)
+      emb_prompt = _mean_pooling(emb_prompt, tensor_prompt['attention_mask']).squeeze()
+      return emb_prompt.mean(0)
     lemm_ru = spacy.load('ru_core_news_sm')
     lemmas = lemm_ru(input_string)
     preproc_text = ' '.join([token.lemma_ for token in lemmas])
@@ -38,8 +44,6 @@ def encode_person_text(input_string, text_tokenizer, vec_model):
     pattern = r'\b(?:кальян|рест|кафе|театр|кино|галлерея|памятн|кофе)\w*\b'
     base_types = dict([[base_types[i], i] for i in range(len(base_types))])
     matches = re.findall(pattern, preproc_text, flags=re.IGNORECASE)
-    print(preproc_text)
-    print(matches)
     if matches:
       norm_text = re.sub(pattern, '',  preproc_text)
       tensor_prompt = text_tokenizer(input_string, padding=True, truncation=True, max_length=24, return_tensors='pt')
