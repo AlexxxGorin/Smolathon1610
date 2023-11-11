@@ -23,8 +23,15 @@ func (p PlaceUseCase) GetPlace(ctx context.Context, placeId int, placeName strin
 		return nil, err
 	}
 
+	events, err := p.eventUseCase.GetPlaceEvents(ctx, place.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
 	place.Features = features
 	place.Tags = tags
-
+	place.Events = events
+	
 	return place, nil
 }

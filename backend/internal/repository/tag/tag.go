@@ -179,12 +179,9 @@ func (t TagRepository) Delete(ctx context.Context, tagId int, tagName string) er
 		tagName,
 	)
 	if err != nil {
-		fmt.Printf("error: %v", err.Error())
-		err = tx.Rollback()
-		if err != nil {
-			err = errcode.Wrap("delete tag repo", err.Error())
-		}
+		tx.Rollback()
 		err = errcode.Wrap("delete tag repo", err.Error())
+		return err
 	}
 
 	err = tx.Commit()

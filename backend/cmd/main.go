@@ -4,19 +4,32 @@ import (
 	"fmt"
 	"github.com/vdmkkk/Salut-/internal/config"
 	"github.com/vdmkkk/Salut-/internal/middleware"
+	eventRepository "github.com/vdmkkk/Salut-/internal/repository/event"
 	featureRepository "github.com/vdmkkk/Salut-/internal/repository/feature"
 	placeRepository "github.com/vdmkkk/Salut-/internal/repository/place"
+	placeEventRepository "github.com/vdmkkk/Salut-/internal/repository/place_event"
 	placeFeatureRepository "github.com/vdmkkk/Salut-/internal/repository/place_feature"
+	placeListRepository "github.com/vdmkkk/Salut-/internal/repository/place_list"
+	placePlaceListRepository "github.com/vdmkkk/Salut-/internal/repository/place_place_list"
 	placeTagRepository "github.com/vdmkkk/Salut-/internal/repository/place_tag"
 	tagRepository "github.com/vdmkkk/Salut-/internal/repository/tag"
+	userRepository "github.com/vdmkkk/Salut-/internal/repository/user"
+	userPlaceRepository "github.com/vdmkkk/Salut-/internal/repository/user_place"
+	userPlaceListsRepository "github.com/vdmkkk/Salut-/internal/repository/user_place_list"
 	bridgeService "github.com/vdmkkk/Salut-/internal/service/bridge"
+	eventService "github.com/vdmkkk/Salut-/internal/service/event"
 	featureService "github.com/vdmkkk/Salut-/internal/service/feature"
 	placeService "github.com/vdmkkk/Salut-/internal/service/place"
+	placeListService "github.com/vdmkkk/Salut-/internal/service/place_list"
 	tagService "github.com/vdmkkk/Salut-/internal/service/tag"
+	userService "github.com/vdmkkk/Salut-/internal/service/user"
 	"github.com/vdmkkk/Salut-/internal/usecase"
+	"github.com/vdmkkk/Salut-/internal/usecase/event"
 	"github.com/vdmkkk/Salut-/internal/usecase/feature"
 	"github.com/vdmkkk/Salut-/internal/usecase/place"
+	"github.com/vdmkkk/Salut-/internal/usecase/place_list"
 	"github.com/vdmkkk/Salut-/internal/usecase/tag"
+	"github.com/vdmkkk/Salut-/internal/usecase/user"
 	"github.com/vdmkkk/Salut-/pkg/postgresdb"
 	"time"
 )
@@ -31,7 +44,7 @@ func main() {
 	}
 
 	contextTimeout := time.Duration(cfg.Timeout) * time.Second
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 5)
 	//ctx := context.Background()
 	//ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(cfg.Timeout))
 	//defer cancel()
@@ -41,14 +54,16 @@ func main() {
 		fmt.Printf("error: %v", err.Error())
 	}
 
-	//err = postgresdb.DropTables(db)
-	//if err != nil {
-	//	fmt.Printf("error: %v", err.Error())
-	//}
+	err = postgresdb.DropTables(db)
+	if err != nil {
+		fmt.Printf("error: %v", err.Error())
+		return
+	}
 
 	err = postgresdb.CreateTables(db)
 	if err != nil {
 		fmt.Printf("error: %v", err.Error())
+		return
 	}
 
 	placeRepo := placeRepository.NewPlaceRepository(db)
@@ -56,18 +71,31 @@ func main() {
 	featureRepo := featureRepository.NewFeatureRepository(db)
 	placeTagRepo := placeTagRepository.NewPlaceTagRepository(db)
 	placeFeatureRepo := placeFeatureRepository.NewPlaceFeatureRepository(db)
+	placeEventRepo := placeEventRepository.NewPlaceEventRepository(db)
+	userPlaceRepo := userPlaceRepository.NewUserPlaceRepository(db)
+	eventRepo := eventRepository.NewEventRepository(db)
+	userRepo := userRepository.NewUserRepository(db)
+	placePlaceListRepo := placePlaceListRepository.NewPlaceListBridgeRepository(db)
+	placeListRepo := placeListRepository.NewPlaceListRepository(db)
+	userPlaceListRepo := userPlaceListsRepository.NewUserPlaceListsRepository(db)
 
 	placeService := placeService.NewPlaceService(placeRepo, contextTimeout)
 	tagService := tagService.NewTagService(tagRepo, contextTimeout)
 	featureService := featureService.NewFeatureService(featureRepo, contextTimeout)
-	bridgeService := bridgeService.NewBridgeService(placeTagRepo, placeFeatureRepo, contextTimeout)
+	bridgeService := bridgeService.NewBridgeService(placeTagRepo, placeFeatureRepo, placeEventRepo, contextTimeout)
+	eventService := eventService.NewEventService(eventRepo, contextTimeout)
+	userService := userService.NewUserService(userRepo, userPlaceRepo, userPlaceListRepo, contextTimeout)
+	placeListService := placeListService.NewPlaceListService(placeListRepo, placePlaceListRepo, contextTimeout)
 	//services := service.NewServices(place, tag, feature)
 
-	placeUseCase := place.NewPlaceUseCase(placeService, tagService, featureService, bridgeService)
+	eventUseCase := event.NewEventUseCase(eventService, bridgeService)
+	placeUseCase := place.NewPlaceUseCase(placeService, tagService, featureService, bridgeService, eventUseCase)
 	tagUseCase := tag.NewTagUseCase(tagService)
 	featureUseCase := feature.NewFeatureUseCase(featureService)
+	placeListUseCase := place_list.NewPlaceListUsceCase(placeUseCase, placeListService)
+	userUseCase := user.NewUserUseCase(placeUseCase, userService, placeListUseCase)
 
-	usecases := usecase.NewUseCases(placeUseCase, tagUseCase, featureUseCase)
+	usecases := usecase.NewUseCases(placeUseCase, tagUseCase, featureUseCase, eventUseCase, userUseCase, placeListUseCase)
 
 	r := middleware.NewClient(usecases)
 

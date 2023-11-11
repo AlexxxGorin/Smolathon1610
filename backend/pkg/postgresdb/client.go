@@ -37,12 +37,10 @@ func CreateTables(db *sql.DB) error {
 				CREATE TABLE users (
     				id SERIAL PRIMARY KEY,
     				login VARCHAR NOT NULL UNIQUE,
-					email VARCHAR NOT NULL UNIQUE,
-					phone_number VARCHAR UNIQUE,
-					hashed_password VARCHAR NOT NULL,
-					avatar BYTEA,
-					birth_date DATE,
-					city_id INTEGER NOT NULL REFERENCES cities(id) 
+					password VARCHAR NOT NULL,
+					avatar VARCHAR,
+					description_vector DOUBLE PRECISION[],
+					place_vector DOUBLE PRECISION[]
 				);
 				
 				CREATE TABLE places (
@@ -75,11 +73,13 @@ func CreateTables(db *sql.DB) error {
 					weight DOUBLE PRECISION NOT NULL
 				);
 				
-				CREATE TABLE playlists (
+				CREATE TABLE place_lists (
 					id SERIAL PRIMARY KEY,
 					name VARCHAR NOT NULL,
 					description VARCHAR,
-					avatar BYTEA
+					avatar VARCHAR,
+					description_vector VARCHAR,
+					tags_vector VARCHAR
 				);
 				
 				CREATE TABLE routes (
@@ -105,18 +105,24 @@ func CreateTables(db *sql.DB) error {
 				
 				CREATE TABLE events (
 					id SERIAL PRIMARY KEY,
-					name VARCHAR NOT NULL,
+					name VARCHAR,
 					description VARCHAR,
-					photos JSONB,
-					datetime_start TIMESTAMP NOT NULL,
-					datetime_end TIMESTAMP NOT NULL,
+					photos VARCHAR[],
+					datetime_start TIMESTAMP,
+					datetime_end TIMESTAMP,
 					entry_price INTEGER,
-					discount INTEGER
+					description_vector DOUBLE PRECISION[]
 				);
 				
 				CREATE TABLE city_place (
 					id SERIAL PRIMARY KEY,
 					city_id INTEGER NOT NULL REFERENCES cities(id),
+					place_id INTEGER NOT NULL REFERENCES places(id) ON DELETE CASCADE
+				);
+
+				CREATE TABLE user_place (
+					id SERIAL PRIMARY KEY,
+					user_id INTEGER NOT NULL REFERENCES users(id),
 					place_id INTEGER NOT NULL REFERENCES places(id) ON DELETE CASCADE
 				);
 				
@@ -131,16 +137,23 @@ func CreateTables(db *sql.DB) error {
 					cuisine_id INTEGER NOT NULL REFERENCES cuisines(id) ON DELETE CASCADE,
 					place_id INTEGER NOT NULL REFERENCES places(id) ON DELETE CASCADE
 				);
+
+				CREATE TABLE place_place_list (
+					id SERIAL PRIMARY KEY,
+					place_id INTEGER NOT NULL REFERENCES places(id) ON DELETE CASCADE,
+					place_list_id INTEGER NOT NULL REFERENCES place_lists(id) ON DELETE CASCADE
+				);
 				
-				CREATE TABLE user_playlist (
+				CREATE TABLE user_place_list (
 					id SERIAL PRIMARY KEY,
 					user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-					playlist_id INTEGER NOT NULL REFERENCES playlists(id) ON DELETE CASCADE
+					place_list_id INTEGER NOT NULL REFERENCES place_lists(id) ON DELETE CASCADE,
+					is_owner BOOLEAN
 				);
 				
 				CREATE TABLE playlist_place (
 					id SERIAL PRIMARY KEY,
-					playlist_id INTEGER NOT NULL REFERENCES playlists(id) ON DELETE CASCADE,
+					playlist_id INTEGER NOT NULL REFERENCES place_lists(id) ON DELETE CASCADE,
 					place_id INTEGER NOT NULL REFERENCES places(id) ON DELETE CASCADE
 				);
 				
@@ -180,25 +193,29 @@ func CreateTables(db *sql.DB) error {
 
 func DropTables(db *sql.DB) error {
 	_, err := db.Exec(
-		`DROP TABLE IF EXISTS place_event;
-				DROP TABLE IF EXISTS place_feature;
-				DROP TABLE IF EXISTS owner_place;
-				DROP TABLE IF EXISTS route_place;
-				DROP TABLE IF EXISTS playlist_place;
-				DROP TABLE IF EXISTS user_playlist;
-				DROP TABLE IF EXISTS place_cuisine;
-				DROP TABLE IF EXISTS place_tag;
-				DROP TABLE IF EXISTS city_place;
-				DROP TABLE IF EXISTS events;
-				DROP TABLE IF EXISTS features;
-				DROP TABLE IF EXISTS owners;
-				DROP TABLE IF EXISTS routes;
-				DROP TABLE IF EXISTS playlists;
-				DROP TABLE IF EXISTS cuisines;
-				DROP TABLE IF EXISTS tags;
-				DROP TABLE IF EXISTS places;
-				DROP TABLE IF EXISTS users;
-				DROP TABLE IF EXISTS cities;`)
+		`DROP TABLE IF EXISTS place_event CASCADE;
+				DROP TABLE IF EXISTS place_feature CASCADE;
+				DROP TABLE IF EXISTS owner_place CASCADE;
+				DROP TABLE IF EXISTS route_place CASCADE;
+				DROP TABLE IF EXISTS playlist_place CASCADE;
+				DROP TABLE IF EXISTS user_playlist CASCADE;
+				DROP TABLE IF EXISTS place_cuisine CASCADE;
+				DROP TABLE IF EXISTS place_tag CASCADE;
+				DROP TABLE IF EXISTS city_place CASCADE;
+				DROP TABLE IF EXISTS events CASCADE;
+				DROP TABLE IF EXISTS features CASCADE;
+				DROP TABLE IF EXISTS owners CASCADE;
+				DROP TABLE IF EXISTS routes CASCADE;
+				DROP TABLE IF EXISTS place_lists CASCADE;
+				DROP TABLE IF EXISTS cuisines CASCADE;
+				DROP TABLE IF EXISTS tags CASCADE;
+				DROP TABLE IF EXISTS places CASCADE;
+				DROP TABLE IF EXISTS users CASCADE;
+				DROP TABLE IF EXISTS cities CASCADE;
+				DROP TABLE IF EXISTS user_place CASCADE;
+				DROP TABLE IF EXISTS place_place_list CASCADE;
+				DROP TABLE IF EXISTS user_place_list CASCADE;
+`)
 
 	if err != nil {
 		return err

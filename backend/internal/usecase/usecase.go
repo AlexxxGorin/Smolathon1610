@@ -31,16 +31,43 @@ type FeatureUseCase interface {
 	DeleteFeature(ctx context.Context, featureId int, featureName string) error
 }
 
-type UseCases struct {
-	Place   PlaceUseCase
-	Tag     TagUseCase
-	Feature FeatureUseCase
+type EventUseCase interface {
+	CreateEvent(ctx context.Context, event *model.Event, placeId int) (int, error)
+	GetPlaceEvents(ctx context.Context, placeId int) ([]model.Event, error)
+	UpdateEvent(ctx context.Context, eventUpd *model.Event) error
+	DeleteEvent(ctx context.Context, eventId int) error
 }
 
-func NewUseCases(place PlaceUseCase, tag TagUseCase, feature FeatureUseCase) *UseCases {
+type UserUseCase interface {
+	Create(ctx context.Context, user model.User) (int, error)
+	Delete(ctx context.Context, userId int) error
+	LikePlace(ctx context.Context, userId int, placeId int) error
+	LikePlaceList(ctx context.Context, userId int, placeListId int) error
+	Get(ctx context.Context, userId int) (model.UserDelivery, error)
+}
+
+type PlaceListUseCase interface {
+	Create(ctx context.Context, placeListDelivery model.PlaceListDelivery) (int, error)
+	Delete(ctx context.Context, placeListId int) error
+	GetPlaceList(ctx context.Context, placeListId int) (model.PlaceListDelivery, error)
+}
+
+type UseCases struct {
+	Place     PlaceUseCase
+	Tag       TagUseCase
+	Feature   FeatureUseCase
+	Event     EventUseCase
+	User      UserUseCase
+	PlaceList PlaceListUseCase
+}
+
+func NewUseCases(place PlaceUseCase, tag TagUseCase, feature FeatureUseCase, event EventUseCase, user UserUseCase, placeList PlaceListUseCase) *UseCases {
 	return &UseCases{
-		Place:   place,
-		Tag:     tag,
-		Feature: feature,
+		Place:     place,
+		Tag:       tag,
+		Feature:   feature,
+		Event:     event,
+		User:      user,
+		PlaceList: placeList,
 	}
 }

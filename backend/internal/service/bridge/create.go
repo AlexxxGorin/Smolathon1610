@@ -35,6 +35,16 @@ func (b BridgeService) CreatePlaceTag(ctx context.Context, tagId int, placeId in
 	return nil
 }
 
+func (b BridgeService) CreatePlaceEvent(ctx context.Context, eventId int, placeId int) error {
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeout)
+
+	defer cancel()
+
+	err := b.placeEventRepo.Create(ctx, eventId, placeId)
+
+	return err
+}
+
 func (b BridgeService) GetAllFeatureIdsByPlace(ctx context.Context, placeId int) ([]int, error) {
 	var featureIds []int
 
@@ -69,6 +79,22 @@ func (b BridgeService) GetAllTagIdsByPlace(ctx context.Context, placeId int) ([]
 	return tagIds, nil
 }
 
+func (b BridgeService) GetAllEventIdsByPlace(ctx context.Context, placeId int) ([]int, error) {
+	var eventIds []int
+
+	ctx, cancel := context.WithTimeout(ctx, b.contextTimeout)
+
+	defer cancel()
+
+	eventIds, err := b.placeEventRepo.GetAllByPlace(ctx, placeId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return eventIds, nil
+}
+
 func (b BridgeService) DeleteFeatureByPlace(ctx context.Context, featureId int, placeId int) error {
 	ctx, cancel := context.WithTimeout(ctx, b.contextTimeout)
 
@@ -76,12 +102,7 @@ func (b BridgeService) DeleteFeatureByPlace(ctx context.Context, featureId int, 
 
 	err := b.placeFeatureRepo.Delete(ctx, featureId, placeId)
 
-	if err != nil {
-		fmt.Printf("error: %v", err.Error())
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (b BridgeService) DeleteTagByPlace(ctx context.Context, tagId int, placeId int) error {
@@ -91,10 +112,5 @@ func (b BridgeService) DeleteTagByPlace(ctx context.Context, tagId int, placeId 
 
 	err := b.placeTagRepo.Delete(ctx, tagId, placeId)
 
-	if err != nil {
-		fmt.Printf("error: %v", err.Error())
-		return err
-	}
-
-	return nil
+	return err
 }

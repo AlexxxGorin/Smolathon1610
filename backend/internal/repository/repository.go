@@ -30,8 +30,45 @@ type FeatureRepository interface {
 	Delete(ctx context.Context, featureId int, featureName string) error
 }
 
+type EventRepository interface {
+	Create(ctx context.Context, eventDB *model.EventDB) (int, error)
+	Get(ctx context.Context, eventId int) (*model.EventDB, error)
+	Update(ctx context.Context, eventUpd *model.EventDB) error
+	Delete(ctx context.Context, eventId int) error
+}
+
 type PlaceBridgeRepository interface {
 	Create(ctx context.Context, Id int, placeId int) error
 	GetAllByPlace(ctx context.Context, placeId int) ([]int, error)
 	Delete(ctx context.Context, Id int, placeId int) error
+}
+
+type UserBridgeRepository interface {
+	Create(ctx context.Context, userId int, placeId int) error
+	GetAllByUser(ctx context.Context, userId int) ([]int, error)
+	Delete(ctx context.Context, userId int, placeId int) error
+}
+
+type UserRepository interface {
+	Create(ctx context.Context, user model.UserDB) (int, error)
+	Delete(ctx context.Context, userId int) error
+	Get(ctx context.Context, userId int) (model.UserDB, error)
+}
+
+type PlaceListRepository interface {
+	Create(ctx context.Context, placeList model.PlaceListDB) (int, error)
+	Delete(ctx context.Context, placeListId int) error
+	Get(ctx context.Context, placeListId int) (model.PlaceListDB, error)
+}
+
+type PlaceListBridgeRepository interface {
+	Create(ctx context.Context, placeListId int, placeId int) error
+	GetAllByPlaceList(ctx context.Context, placeListId int) ([]int, error)
+	Delete(ctx context.Context, placeListId int, placeId int) error
+}
+
+type UserPlaceListsRepository interface {
+	Create(ctx context.Context, userId int, placeListId int) error
+	GetAllByUserId(ctx context.Context, userId int) ([]int, error)
+	Delete(ctx context.Context, userId int, placeListId int) error
 }

@@ -56,7 +56,7 @@ func (h *Handler) CreatePlace(c *gin.Context) {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /place/get [get]
 func (h *Handler) GetPlace(c *gin.Context) {
-	var placeDelivery *model.PlaceDelivery
+	//var placeDelivery *model.PlaceDelivery
 
 	id, err := strconv.Atoi(c.Query("id"))
 	name := c.Query("name")
@@ -75,9 +75,9 @@ func (h *Handler) GetPlace(c *gin.Context) {
 		return
 	}
 
-	placeDelivery = converter.PlaceToDelivery(place)
+	//placeDelivery = converter.PlaceToDelivery(place)
 
-	c.JSON(http.StatusOK, placeDelivery)
+	c.JSON(http.StatusOK, place)
 }
 
 // @Summary Get all places

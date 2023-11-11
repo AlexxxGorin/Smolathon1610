@@ -2,6 +2,7 @@ package place
 
 import (
 	"github.com/vdmkkk/Salut-/internal/service"
+	"github.com/vdmkkk/Salut-/internal/usecase"
 	"github.com/vdmkkk/Salut-/model"
 )
 
@@ -10,14 +11,16 @@ type PlaceUseCase struct {
 	tagService     service.TagService
 	featureService service.FeatureService
 	bridgeService  service.BridgeService
+	eventUseCase   usecase.EventUseCase
 }
 
-func NewPlaceUseCase(place service.PlaceService, tag service.TagService, feature service.FeatureService, bridge service.BridgeService) *PlaceUseCase {
+func NewPlaceUseCase(place service.PlaceService, tag service.TagService, feature service.FeatureService, bridge service.BridgeService, event usecase.EventUseCase) *PlaceUseCase {
 	return &PlaceUseCase{
 		placeService:   place,
 		tagService:     tag,
 		featureService: feature,
 		bridgeService:  bridge,
+		eventUseCase:   event,
 	}
 }
 

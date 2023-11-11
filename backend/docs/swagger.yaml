@@ -5,6 +5,128 @@ definitions:
         example: error
         type: string
     type: object
+  model.Event:
+    properties:
+      date_time_end:
+        type: string
+      date_time_start:
+        type: string
+      description:
+        type: string
+      description_vector:
+        items:
+          type: number
+        type: array
+      entry_price:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+    type: object
+  model.EventCreate:
+    properties:
+      date_time_end:
+        type: string
+      date_time_start:
+        type: string
+      description:
+        type: string
+      description_vector:
+        items:
+          type: number
+        type: array
+      entry_price:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      place_id:
+        type: integer
+    type: object
+  model.Feature:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+      weight:
+        items:
+          type: number
+        type: array
+    type: object
+  model.Place:
+    properties:
+      address:
+        type: string
+      average_bill:
+        type: string
+      description:
+        type: string
+      description_vector:
+        items:
+          type: number
+        type: array
+      events:
+        items:
+          $ref: '#/definitions/model.Event'
+        type: array
+      features:
+        items:
+          $ref: '#/definitions/model.Feature'
+        type: array
+      features_vector:
+        items:
+          type: number
+        type: array
+      id:
+        type: integer
+      link:
+        type: string
+      menu:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+      name:
+        type: string
+      phone_number:
+        type: string
+      photos:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      tags:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      tags_vector:
+        items:
+          type: number
+        type: array
+      work_hours:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+    required:
+    - name
+    type: object
   model.PlaceDelivery:
     properties:
       address:
@@ -64,6 +186,29 @@ definitions:
     required:
     - name
     type: object
+  model.PlaceListDelivery:
+    properties:
+      avatar:
+        type: string
+      description:
+        type: string
+      description_vector:
+        items:
+          type: number
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      places:
+        items:
+          $ref: '#/definitions/model.Place'
+        type: array
+      tags_vector:
+        items:
+          type: number
+        type: array
+    type: object
   model.Tag:
     properties:
       id:
@@ -75,12 +220,154 @@ definitions:
           type: number
         type: array
     type: object
+  model.User:
+    properties:
+      avatar:
+        type: string
+      description_vector:
+        items:
+          type: number
+        type: array
+      id:
+        type: integer
+      login:
+        type: string
+      password:
+        type: string
+      place_vector:
+        items:
+          type: number
+        type: array
+    type: object
+  model.UserDelivery:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      login:
+        type: string
+      password:
+        type: string
+      place_lists:
+        items:
+          $ref: '#/definitions/model.PlaceListDelivery'
+        type: array
+      places:
+        items:
+          $ref: '#/definitions/model.Place'
+        type: array
+    type: object
 info:
   contact: {}
   description: This is a Salut! API
   title: Salut API
   version: "1.0"
 paths:
+  /event/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new event with the input payload
+      operationId: create-event
+      parameters:
+      - description: Place Payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.EventCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created event with ID
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new event
+      tags:
+      - events
+  /event/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete event with the input payload
+      operationId: delete-event
+      parameters:
+      - description: event delete by id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete event
+      tags:
+      - events
+  /event/update:
+    put:
+      consumes:
+      - application/json
+      description: Update event with the input payload
+      operationId: update-event
+      parameters:
+      - description: Place Payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Event'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update event
+      tags:
+      - events
   /place/create:
     post:
       consumes:
@@ -247,4 +534,276 @@ paths:
       summary: Update place
       tags:
       - places
+  /place_list/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new place list with the input payload
+      operationId: create-place-list
+      parameters:
+      - description: Place Payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlaceListDelivery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created place with ID
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new place list
+      tags:
+      - place_lists
+  /place_list/delete:
+    delete:
+      description: Delete place list with the input payload
+      operationId: delete-place-list
+      parameters:
+      - description: place id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully finded place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete place list by id
+      tags:
+      - place_lists
+  /place_list/get:
+    get:
+      description: Get place list with the input payload
+      operationId: get-place-lsit
+      parameters:
+      - description: user get by id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully finded place
+          schema:
+            $ref: '#/definitions/model.PlaceListDelivery'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get place list by id
+      tags:
+      - place_lists
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the input payload
+      operationId: create-user
+      parameters:
+      - description: Place Payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created place with ID
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - users
+  /user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user with the input payload
+      operationId: delete-user
+      parameters:
+      - description: user delete by id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete user
+      tags:
+      - users
+  /user/get:
+    get:
+      description: Get user with the input payload
+      operationId: get-user
+      parameters:
+      - description: user get by id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully finded place
+          schema:
+            $ref: '#/definitions/model.UserDelivery'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user by id
+      tags:
+      - users
+  /user/like_place:
+    put:
+      description: Like place with the input payload
+      operationId: like-place-user
+      parameters:
+      - description: place id
+        in: query
+        name: place_id
+        required: true
+        type: integer
+      - description: user id
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully finded place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Like place by id
+      tags:
+      - users
+  /user/like_place_list:
+    put:
+      consumes:
+      - application/json
+      description: Like place lis with the input payload
+      operationId: like-place-list
+      parameters:
+      - description: user delete by id
+        in: query
+        name: place_list_id
+        required: true
+        type: integer
+      - description: user delete by id
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted place
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errcode.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Like place list
+      tags:
+      - users
 swagger: "2.0"

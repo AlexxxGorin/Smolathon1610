@@ -22,6 +22,20 @@ func NewClient(usecases *usecase.UseCases) *gin.Engine {
 	r.GET("/place/get_all", h.GetAllPlaces)
 	r.PUT("/place/update", h.UpdatePlace)
 	r.DELETE("/place/delete", h.DeletePlace)
+
+	r.POST("/event/create", h.CreateEvent)
+	r.PUT("/event/update", h.UpdateEvent)
+	r.DELETE("/event/delete", h.DeleteEvent)
+
+	r.POST("/user/create", h.CreateUser)
+	r.PUT("/user/like_place", h.LikePlace)
+	r.GET("/user/get", h.GetUser)
+	r.DELETE("/user/delete", h.DeleteUser)
+
+	r.POST("/place_list/create", h.CreatePlaceList)
+	r.DELETE("/place_list/delete", h.DeletePlaceList)
+	r.GET("/place_list/get", h.GetPlaceList)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r

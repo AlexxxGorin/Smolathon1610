@@ -18,6 +18,7 @@ type Place struct {
 	FeaturesVector    []float64                    `json:"features_vector"`
 	Tags              []Tag                        `json:"tags"`
 	TagsVector        []float64                    `json:"tags_vector"`
+	Events            []Event                      `json:"events"`
 }
 
 type PlaceDB struct {
