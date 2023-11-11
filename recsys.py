@@ -1,5 +1,5 @@
 def get_topk_rec(man_hist : list, idx2place_v : dict, k=None,
-                 man_vector : list = None, alpha : float = 1):
+                 man_vector : list = None, alpha : float = 0.5):
   '''
   man_vector - вектор человека, если его нет рекомендуем чисто по истории, если есть учитываем промпт и историю
   man_hist - массив истроий мест человека, элементы id мест
@@ -10,17 +10,18 @@ def get_topk_rec(man_hist : list, idx2place_v : dict, k=None,
   '''
   cos = torch.nn.CosineSimilarity(dim=-1)
   man_hist_vector = [idx2place_v[idx] for idx in man_hist]
-  man_hist_vector = torch.tensor(man_hist_vector)[:, 1].mean(-1)
+  man_hist_vector = torch.tensor(man_hist_vector)[:, 1:].mean(0)
   if man_vector != None:
     interest_type = man_vector[0]
     man_vector = torch.tensor(man_vector[1:])
+    places_ids = list(filter(lambda x: idx2place_v[x][0] == interest_type and x not in man_hist,  list(idx2place_v.keys())))
     unnul_place_vectors = torch.tensor(list(map(idx2place_v.get, places_ids)))
-    places_ids = list(filter(lambda x: idx2place_v[x][0] == interest_type,  list(idx2place_v.keys())))
     temp_ids = [i for i in range(len(places_ids))]
-    cosine_arr = cos((1 - alpha) * man_vector + alpha * man_hist_vector, unnul_place_vectors[1:])
+    temp = (1 - alpha) * man_vector + alpha * man_hist_vector
+    cosine_arr = cos((1 - alpha) * man_vector + alpha * man_hist_vector, unnul_place_vectors[:, 1:])
   else:
-    unnul_place_vectors = torch.tensor(list(map(idx2place_v.get, places_ids)))
     places_ids = list(filter(lambda x: idx2place_v[x] != [] and x not in man_hist,  list(idx2place_v.keys())))
+    unnul_place_vectors = torch.tensor(list(map(idx2place_v.get, places_ids)))
     temp_ids = [i for i in range(len(places_ids))]
     cosine_arr = cos(man_hist_vector, unnul_place_vectors)
   if k != None:
@@ -28,3 +29,4 @@ def get_topk_rec(man_hist : list, idx2place_v : dict, k=None,
   else:
     top_ids = torch.topk(cosine_arr, k=len(temp_ids)).indices
   return torch.tensor(places_ids)[top_ids].tolist()
+
