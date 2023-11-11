@@ -49,21 +49,22 @@ def do_nice(text):
     return 8, preproc_text
 
 
-lemm_ru = spacy.load('ru_core_news_sm')
-
-
 def create_place_emb(desc, mode='prompt'):
   emb_dict = {}
   for id in tqdm.tqdm_notebook(desc.keys()):
     text = desc[id]
     if text != '' or text != []:
-      try:
-        place_type, text = do_nice(text)
-      except:
-        print(text, id)
-        break
-      embedding = compute_prompt_embeddings(text, mode, is_return=True)
-      emb_dict[id] = [place_type] + embedding.cpu().tolist()
+      if mode=='prompt':
+        try:
+          place_type, text = do_nice(text)
+        except:
+          print(text, id)
+          break
+        embedding = compute_prompt_embeddings(text, mode, is_return=True)
+        emb_dict[id] = [place_type] + embedding.cpu().tolist()
+      else:
+        embedding = compute_prompt_embeddings(text, mode, is_return=True)
+        emb_dict[id] = embedding.cpu().tolist()
     else: 
       emb_dict[id] = []
   return emb_dict
